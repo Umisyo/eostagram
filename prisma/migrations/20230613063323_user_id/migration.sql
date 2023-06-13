@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "name" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -33,6 +34,9 @@ CREATE TABLE "TagOnImage" (
 
     CONSTRAINT "TagOnImage_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_userId_key" ON "User"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
