@@ -11,7 +11,7 @@ interface ImagePreviewListProps {
 export default function ImagePreviewList({files, handleDelete, setCurrentPreviewIndex}: ImagePreviewListProps) {
   if (files && files.length > 0) {
     return (
-      <div className="flex overflow-x-scroll gap-2 py-2 items-center h-fit shrink-0">
+      <div className="flex overflow-x-scroll hidden-scrollbar gap-2 py-2 items-center h-fit shrink-0">
         {[...files].map((file, index) => {
           return (
             <ImageMiniPreview file={file} key={index} index={index} handleDelete={handleDelete}
