@@ -27,6 +27,13 @@ export default function Form() {
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     if (!inputRef.current?.files) return;
+    if(files?.length && files.length >= 8) {
+      toast({
+        title: '画像は8枚までです',
+      })
+      return
+    }
+
     const newFileArray = [
       ...selectedFileArray,
       ...Array.from(e.target.files),
@@ -88,7 +95,7 @@ export default function Form() {
                   <FontAwesomeIcon className="w-[72px] h-auto" icon={faImages}/>
                 </div>
               }
-              <input className="hidden" type="file" name="image" ref={inputRef}
+              <input className="hidden" type="file" name="image" accept="image/*" ref={inputRef}
                 onChange={handleChangeFile} required multiple/>
             </div>
             <ImagePreviewList files={files} handleDelete={handleDelete}
