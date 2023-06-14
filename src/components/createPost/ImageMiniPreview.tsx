@@ -6,11 +6,11 @@ import {X} from "lucide-react";
 interface ImageMiniPreviewProps {
   file: File;
   index: number;
-  handleDelete: (index: number) => void;
+  handleDeleteFile: (index: number) => void;
   setCurrentPreviewIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function ImageMiniPreview({file, index, handleDelete, setCurrentPreviewIndex}: ImageMiniPreviewProps) {
+export default function ImageMiniPreview({file, index, handleDeleteFile, setCurrentPreviewIndex}: ImageMiniPreviewProps) {
   return (
     <div className="w-fit h-fit relative">
       <TooltipProvider>
@@ -20,7 +20,7 @@ export default function ImageMiniPreview({file, index, handleDelete, setCurrentP
               className="absolute top-[-5px] right-[-5px] w-4 h-4 rounded-full p-0 z-10 bg-black opacity-80 hover:opacity-50"
               onClick={e => {
                 e.preventDefault()
-                handleDelete(index)
+                handleDeleteFile(index)
               }}>
               <X className="h-2 w-2 text-white"/>
               <span className="sr-only">Delete</span>

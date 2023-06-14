@@ -47,7 +47,7 @@ export default function Form() {
     setFiles(dt.files); // Reactのstateを更新
   };
 
-  const handleDelete = (index: number) => {
+  const handleDeleteFile = (index: number) => {
     if (!inputRef.current?.files) return;
     const dt = new DataTransfer();
     selectedFileArray.forEach((file, i) => i !== index && dt.items.add(file));
@@ -98,7 +98,7 @@ export default function Form() {
               <input className="hidden" type="file" name="image" accept="image/*" ref={inputRef}
                 onChange={handleChangeFile} required multiple/>
             </div>
-            <ImagePreviewList files={files} handleDelete={handleDelete}
+            <ImagePreviewList files={files} handleDeleteFile={handleDeleteFile}
               setCurrentPreviewIndex={setCurrentPreviewIndex}/>
           </label>
         </div>
