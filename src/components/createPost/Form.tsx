@@ -11,14 +11,15 @@ import {Badge} from "~/components/ui/badge";
 import {useToast} from "~/components/ui/use-toast";
 import {Button} from "~/components/ui/button";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/select";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "~/components/ui/tooltip";
-import {X} from "lucide-react";
+import useGetAllTags from "~/hooks/tags/useGetAllTags";
+import TagBadge from "~/components/createPost/TagBadge";
 
 
 export default function Form() {
   const [files, setFiles] = useState<FileList | null>()
   const [currentPreviewIndex, setCurrentPreviewIndex] = useState<number>(0)
-  const [tags, setTags] = useState<{ id: string, text: string }[]>([]);
+  const [selectTags, setSelectTags] = useState<string[]>([]);
+  const {tags, isLoading} = useGetAllTags()
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -67,23 +68,27 @@ export default function Form() {
   }, [files, currentPreviewIndex]);
 
   const isExistTag = (text: string) => {
-    if (tags.length === 0) return false;
-    return tags.some(tag => tag.text === text);
+    if (selectTags.length === 0) return false;
+    return selectTags.some(tag => tag === text);
   }
 
+  const suggestions = useMemo(() => {
+    if (isLoading) return []
+    return tags.map((tag: { id: number, name: string }) => ({id: tag.id.toString(), text: tag.name}))
+  }, [tags, isLoading])
+
   const handleDeleteTag = (tagIndex: number) => {
-    setTags(tags.filter((tag, index) => index !== tagIndex));
+    setSelectTags(selectTags.filter((tag, index) => index !== tagIndex));
   };
 
   const handleAdditionTag = (tag: { id: string, text: string }) => {
-    if (tags.length > 10) {
+    if (selectTags.length > 10) {
       toast({title: 'タグは10件まで登録可能です'})
       return
     }
 
-    isExistTag(tag.text) ? toast({title: 'すでにタグが存在します'}) : setTags([...tags, tag]);
+    isExistTag(tag.text) ? toast({title: 'すでにタグが存在します'}) : setSelectTags([...selectTags, tag.text]);
   };
-
 
   return (
     <div className="max-w-7xl px-4 py-12">
@@ -128,36 +133,18 @@ export default function Form() {
             <ReactTags
               classNames={{
                 tagInput: "mt-2",
-                tagInputField: "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                tagInputField: "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                activeSuggestion: "w-fit mt-2 text-sm border border-gray-300 rounded",
               }}
               maxLength={10}
               handleAddition={handleAdditionTag}
-              handleDelete={handleDeleteTag} placeholder="タグを入力してください"/>
+              handleDelete={handleDeleteTag}
+              suggestions={suggestions}
+              placeholder="タグを入力してください"/>
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag, index) => {
+              {selectTags.map((tag, index) => {
                 return (
-                  <Badge key={tag.id} variant="outline" className="px-2 min-w-10 w-fit">
-                    <span className="flex items-center gap-2">
-                      {tag.text}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button type="button"
-                              className="w-4 h-4 rounded-full p-0 bg-black opacity-80 hover:opacity-50"
-                              onClick={() => {
-                                handleDeleteTag(index)
-                              }}>
-                              <X className="h-2 w-2 text-white"/>
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>delete tag</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </span>
-                  </Badge>
+                  <TagBadge key={index} tag={tag} index={index} handleDeleteTag={handleDeleteTag}/>
                 )
               })}
             </div>
