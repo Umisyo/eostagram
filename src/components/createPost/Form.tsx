@@ -9,6 +9,10 @@ import ImagePreviewList from "~/components/createPost/ImagePreviewList";
 import {WithContext as ReactTags} from 'react-tag-input';
 import {Badge} from "~/components/ui/badge";
 import {useToast} from "~/components/ui/use-toast";
+import {Button} from "~/components/ui/button";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/select";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "~/components/ui/tooltip";
+import {X} from "lucide-react";
 
 
 export default function Form() {
@@ -27,7 +31,7 @@ export default function Form() {
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     if (!inputRef.current?.files) return;
-    if(files?.length && files.length >= 8) {
+    if (files?.length && files.length >= 8) {
       toast({
         title: '画像は8枚までです',
       })
@@ -72,12 +76,17 @@ export default function Form() {
   };
 
   const handleAdditionTag = (tag: { id: string, text: string }) => {
+    if (tags.length > 10) {
+      toast({title: 'タグは10件まで登録可能です'})
+      return
+    }
+
     isExistTag(tag.text) ? toast({title: 'すでにタグが存在します'}) : setTags([...tags, tag]);
   };
 
 
   return (
-    <div className="max-w-7xl px-4 pb-12">
+    <div className="max-w-7xl px-4 py-12">
       <p className="text-center py-2 border-b border-gray-400">投稿を作成</p>
       <form className="grid md:grid-cols-2 pt-2">
         <div className="w-full md:h-[500px]">
@@ -117,17 +126,60 @@ export default function Form() {
           <div>
             <Label>タグ</Label>
             <ReactTags
-              classNames={{tagInput: "mt-2", tagInputField: "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"}}
+              classNames={{
+                tagInput: "mt-2",
+                tagInputField: "flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              }}
               maxLength={10}
               handleAddition={handleAdditionTag}
               handleDelete={handleDeleteTag} placeholder="タグを入力してください"/>
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag ) => {
+              {tags.map((tag, index) => {
                 return (
-                  <Badge key={tag.id} variant="outline" className="min-w-10 w-fit">{tag.text}</Badge>
+                  <Badge key={tag.id} variant="outline" className="px-2 min-w-10 w-fit">
+                    <span className="flex items-center gap-2">
+                      {tag.text}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button type="button"
+                              className="w-4 h-4 rounded-full p-0 bg-black opacity-80 hover:opacity-50"
+                              onClick={() => {
+                                handleDeleteTag(index)
+                              }}>
+                              <X className="h-2 w-2 text-white"/>
+                              <span className="sr-only">Delete</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>delete tag</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </span>
+                  </Badge>
                 )
               })}
             </div>
+          </div>
+          <div>
+            <Label>撮影地</Label>
+            <div className="flex items-center mt-2">
+              <Select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="エルピス"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="エルピス">エルピス</SelectItem>
+                  <SelectItem value="アーモロート">アーモロート</SelectItem>
+                  <SelectItem value="その他">その他</SelectItem>
+                </SelectContent>
+                <Input type="text" placeholder="( 24.2 , 10.9 ) Z:3.0"/>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Button className="block ml-auto" type="submit">投稿する</Button>
           </div>
         </div>
       </form>
