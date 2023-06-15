@@ -11,7 +11,9 @@ CREATE TABLE "User" (
 CREATE TABLE "Post" (
     "id" SERIAL NOT NULL,
     "imageUrl" TEXT NOT NULL,
-    "caption" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "caption" TEXT,
+    "place" TEXT,
     "userId" TEXT NOT NULL,
     "postDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

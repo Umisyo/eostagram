@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id    String  @unique @id //Clerk ID
-  userId String @unique @default(cuid())
-  name  String?
-  posts Post[]
+  id     String  @id @unique
+  userId String  @unique @default(cuid())
+  name   String?
+  posts  Post[]
 }
 
 model Post {
   id       Int          @id @default(autoincrement())
   imageUrl String
-  caption  String
+  title    String
+  caption  String?
+  place    String?
   userId   String
   postDate DateTime     @default(now())
   user     User         @relation(fields: [userId], references: [id])
